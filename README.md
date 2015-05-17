@@ -1,2 +1,3 @@
 # watering
-Watering for my platns
+
+Watering for my plants
