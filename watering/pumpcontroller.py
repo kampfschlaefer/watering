@@ -1,6 +1,6 @@
 
 import gevent
-from pyfacedigitalio import (
+from pifacedigitalio import (
     PiFaceDigital, InputEventListener, IODIR_RISING_EDGE
 )
 
@@ -15,22 +15,39 @@ class PumpController(StateMachine):
 
         self.listener = InputEventListener(chip=self.pfd)
         self.listener.register(0, IODIR_RISING_EDGE, self.input0)
+        self.listener.register(1, IODIR_RISING_EDGE, self.input1)
+        self.listener.register(3, IODIR_RISING_EDGE, self.input3)
         self.listener.activate()
+
+    def stop(self):
+        self.logger('stopping listener')
+        self.listener.deactivate()
 
     def set_pump_state(self, state):
         self.pfd.relays[0].value = state
 
     def input0(self, event):
-        self.logger.info('Input event %s', event)
+        self.logger.info('Input event pin0 %s', event)
+        self.handle_upper_sensor(True)
+
+    def input1(self, event):
+        self.logger.info('Input event pin1 %s', event)
+        self.handle_lower_sensor(True)
+
+    def input3(self, event):
+        self.logger.info('Input event pin3 %s', event)
+        self.handle_button(True)
 
 
 def run():
     import logging
 
-    logging.basicConfig()
+    logging.basicConfig(level=logging.DEBUG)
 
     pc = PumpController()
 
     gevent.sleep(300)
 
-    del pc
+    logging.info('ending...')
+    pc.stop()
+    logging.info('...finished')
