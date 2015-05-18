@@ -31,13 +31,15 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'watering_simulator = watering.simulation:run'
+            'watering_simulator = watering.simulation:run',
+            'pumpcontroller = watering.pumpcontroller:run',
         ]
     },
     dependency_links=[
         'git+https://github.com/piface/pifacedigital-emulator.git#egg=pifacedigital-emulator'
     ],
     install_requires=[
+        'gevent==1.0.1',
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
         # 'pifacedigital-emulator',
