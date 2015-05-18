@@ -20,7 +20,7 @@ class PumpController(StateMachine):
         self.listener.activate()
 
     def stop(self):
-        self.logger('stopping listener')
+        # self.logger('stopping listener')
         self.listener.deactivate()
 
     def set_pump_state(self, state):
@@ -46,7 +46,11 @@ def run():
 
     pc = PumpController()
 
-    gevent.sleep(300)
+    try:
+        while True:
+            gevent.sleep(10)
+    except KeyboardInterrupt:
+        pass
 
     logging.info('ending...')
     pc.stop()
