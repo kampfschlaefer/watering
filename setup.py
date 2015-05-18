@@ -29,11 +29,20 @@ setup(
     author='Arnold Krille',
     author_email='arnold@arnoldarts.de',
     packages=find_packages(),
-    # entry_points={
-    #     'console_scripts': [
-    #         'comics_downloader = comic_downloader.informationextractor:run'
-    #     ]
-    # },
+    entry_points={
+        'console_scripts': [
+            'watering_simulator = watering.simulation:run'
+        ]
+    },
+    dependency_links=[
+        'git+https://github.com/piface/pifacedigital-emulator.git#egg=pifacedigital-emulator'
+    ],
+    install_requires=[
+        'pifacecommon==4.1.2',
+        'pifacedigitalio==3.0.5',
+        # 'pifacedigital-emulator',
+        # 'PySide==1.2.2'
+    ],
     tests_require=['pytest', 'pytest-xdist', 'pytest-cov'],
     cmdclass={'test': PyTest},
 )
