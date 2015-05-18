@@ -17,14 +17,21 @@ class TestSimpleStates(object):
     def test_initial_state(self, statemachine):
         self.check_state(statemachine, 'IdleState')
 
-    def test_low_water(self, statemachine):
-        statemachine.handle_lower_sensor(True)
+    @pytest.mark.parametrize(
+        'initialstate, sensor, sensor_state, targetstate',
+        (
+            ('Idle', 'handle_lower_sensor', True, 'PumpAction'),
+            ('PumpAction', 'handle_upper_sensor', True, 'IdleState'),
+            ('PumpAction', 'handle_timeout', True, 'LowAlarm'),
+            ('LowAlarm', 'handle_button', True, 'PumpAction'),
+            ('Idle', 'handle_button', True, 'PumpAction'),
+        )
+    )
+    def test_single_state_changes(
+        self, statemachine, initialstate, sensor, sensor_state, targetstate
+    ):
+        statemachine.set_new_state(initialstate)
 
-        self.check_state(statemachine, 'PumpAction')
+        getattr(statemachine, sensor)(sensor_state)
 
-    def test_high_water(self, statemachine):
-        statemachine.set_new_state('PumpAction')
-
-        statemachine.handle_upper_sensor(True)
-
-        self.check_state(statemachine, 'IdleState')
+        self.check_state(statemachine, targetstate)

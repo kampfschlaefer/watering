@@ -13,12 +13,22 @@ class AbstractState(object):
     def handle_upper_sensor(self, state):
         self.logger.debug('Unhandled upper sensor')
 
+    def handle_button(self, state):
+        self.logger.debug('Unhandled button event')
+
+    def handle_timeout(self, state):
+        self.logger.debug('Unhandled timeout')
+
 
 class IdleState(AbstractState):
     def handle_lower_sensor(self, state):
         if state:
             self.logger.info('Lower sensor True, should start pumping')
             self._statemachine.set_new_state('PumpAction')
+
+    def handle_button(self, state):
+        self.logger.info('Button triggered pump action')
+        self._statemachine.set_new_state('PumpAction')
 
 
 class PumpAction(AbstractState):
@@ -27,9 +37,18 @@ class PumpAction(AbstractState):
             self.logger.info('Upper sensor True, should stop pumping')
             self._statemachine.set_new_state('Idle')
 
+    def handle_timeout(self, state):
+        self.logger.warning(
+            'Timeout occured while the pump was running. '
+            'Probably the tank is empty!'
+        )
+        self._statemachine.set_new_state('LowAlarm')
+
 
 class LowAlarm(AbstractState):
-    pass
+    def handle_button(self, state):
+        self.logger.info('Button triggered pump action')
+        self._statemachine.set_new_state('PumpAction')
 
 
 class StateMachine(object):
@@ -48,4 +67,4 @@ class StateMachine(object):
         if hasattr(self._currentstate, attr):
             return getattr(self._currentstate, attr)
         else:
-            return super(StateMachine, self).__getattr__(attr)
+            return getattr(super(StateMachine, self), attr)
