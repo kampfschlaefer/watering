@@ -32,6 +32,14 @@ class IdleState(AbstractState):
 
 
 class PumpAction(AbstractState):
+    def __init__(self, statemachine):
+        super(PumpAction, self).__init__(statemachine)
+
+        self._statemachine.set_pump_state(True)
+
+    def __del__(self):
+        self._statemachine.set_pump_state(False)
+
     def handle_upper_sensor(self, state):
         if state:
             self.logger.info('Upper sensor True, should stop pumping')
@@ -53,15 +61,22 @@ class LowAlarm(AbstractState):
 
 class StateMachine(object):
     def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
         self._states = {
-            'Idle': IdleState(self),
-            'PumpAction': PumpAction(self),
-            'LowAlarm': LowAlarm(self),
+            'Idle': IdleState,
+            'PumpAction': PumpAction,
+            'LowAlarm': LowAlarm,
         }
+        self._currentstate = None
         self.set_new_state('Idle')
 
     def set_new_state(self, statename):
-        self._currentstate = self._states[statename]
+        oldstate = self._currentstate
+        self._currentstate = self._states[statename](self)
+        del oldstate
+
+    def set_pump_state(self, state):
+        self.logger.warning('This is not a real pump controller...')
 
     def __getattr__(self, attr):
         if hasattr(self._currentstate, attr):
