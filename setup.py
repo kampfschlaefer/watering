@@ -36,14 +36,13 @@ setup(
         ]
     },
     dependency_links=[
-        'git+https://github.com/piface/pifacedigital-emulator.git#egg=pifacedigital-emulator'
+        'git+https://github.com/piface/pifacedigital-emulator.git'
+        '#egg=pifacedigital-emulator',
     ],
     install_requires=[
         'gevent==1.0.1',
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
-        # 'pifacedigital-emulator',
-        # 'PySide==1.2.2'
     ],
     tests_require=['pytest', 'pytest-xdist', 'pytest-cov'],
     cmdclass={'test': PyTest},
