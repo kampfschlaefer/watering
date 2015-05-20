@@ -1,8 +1,12 @@
 
 import gevent
 from pifacedigitalio import (
-    PiFaceDigital, InputEventListener, IODIR_RISING_EDGE
+    PiFaceDigital,
+    # InputEventListener,
+    IODIR_RISING_EDGE,
+    IODIR_FALLING_EDGE,
 )
+from interrupts import InputEventListener
 
 from statemachine import StateMachine
 
@@ -14,7 +18,7 @@ class PumpController(StateMachine):
         self.pfd = PiFaceDigital()
 
         self.listener = InputEventListener(chip=self.pfd)
-        self.listener.register(0, IODIR_RISING_EDGE, self.input0)
+        self.listener.register(0, IODIR_FALLING_EDGE, self.input0)
         self.listener.register(1, IODIR_RISING_EDGE, self.input1)
         self.listener.register(3, IODIR_RISING_EDGE, self.input3)
         self.listener.activate()
@@ -43,6 +47,7 @@ def run():
     import logging
 
     logging.basicConfig(level=logging.DEBUG)
+    logging.info('starting main thread')
 
     pc = PumpController()
 
