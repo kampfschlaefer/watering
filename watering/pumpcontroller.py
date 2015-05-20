@@ -2,9 +2,8 @@
 import gevent
 from pifacedigitalio import (
     PiFaceDigital,
-    # InputEventListener,
     IODIR_RISING_EDGE,
-    IODIR_FALLING_EDGE,
+    IODIR_BOTH,
 )
 from interrupts import InputEventListener
 
@@ -18,28 +17,27 @@ class PumpController(StateMachine):
         self.pfd = PiFaceDigital()
 
         self.listener = InputEventListener(chip=self.pfd)
-        self.listener.register(0, IODIR_FALLING_EDGE, self.input0)
-        self.listener.register(1, IODIR_RISING_EDGE, self.input1)
-        self.listener.register(3, IODIR_RISING_EDGE, self.input3)
+        self.listener.register(0, IODIR_BOTH, self.in_upper)
+        self.listener.register(1, IODIR_RISING_EDGE, self.in_lower)
+        self.listener.register(3, IODIR_RISING_EDGE, self.in_button)
         self.listener.activate()
 
     def stop(self):
-        # self.logger('stopping listener')
         self.listener.deactivate()
 
     def set_pump_state(self, state):
         self.pfd.relays[0].value = state
 
-    def input0(self, event):
-        self.logger.info('Input event pin0 %s', event)
-        self.handle_upper_sensor(True)
+    def in_upper(self, event):
+        self.logger.info('Input event pin0 (upper) %s', event)
+        self.handle_upper_sensor(event.direction == 1)
 
-    def input1(self, event):
-        self.logger.info('Input event pin1 %s', event)
+    def in_lower(self, event):
+        self.logger.info('Input event pin1 (lower) %s', event)
         self.handle_lower_sensor(True)
 
-    def input3(self, event):
-        self.logger.info('Input event pin3 %s', event)
+    def in_button(self, event):
+        self.logger.info('Input event pin3 (button) %s', event)
         self.handle_button(True)
 
 
