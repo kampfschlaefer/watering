@@ -23,6 +23,7 @@ class PumpController(StateMachine):
         self.listener.activate()
 
     def stop(self):
+        self.pfd.output_port.all_off()
         self.listener.deactivate()
 
     def set_pump_state(self, state):
