@@ -1,11 +1,18 @@
 
 import logging
+import gevent
 
 
 class AbstractState(object):
     def __init__(self, statemachine):
         self._statemachine = statemachine
         self.logger = logging.getLogger(self.__class__.__name__)
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
 
     def handle_lower_sensor(self, state):
         self.logger.debug('Unhandled lower sensor')
@@ -16,8 +23,8 @@ class AbstractState(object):
     def handle_button(self, state):
         self.logger.debug('Unhandled button event')
 
-    def handle_timeout(self, state):
-        self.logger.debug('Unhandled timeout')
+    def handle_timeout(self, state=None):
+        self.logger.debug('%s: Unhandled timeout', self.__class__.__name__)
 
 
 class MaxState(AbstractState):
@@ -44,20 +51,20 @@ class IdleState(AbstractState):
 
 
 class PumpAction(AbstractState):
-    def __init__(self, statemachine):
-        super(PumpAction, self).__init__(statemachine)
-
+    def start(self):
         self._statemachine.set_pump_state(True)
 
-    def __del__(self):
+    def stop(self):
+        self.logger.info('delete PumpAction')
         self._statemachine.set_pump_state(False)
+        self.logger.info('PumpAction gone')
 
     def handle_upper_sensor(self, state):
         if state:
             self.logger.info('Upper sensor True, should stop pumping')
             self._statemachine.set_new_state('MaxState')
 
-    def handle_timeout(self, state):
+    def handle_timeout(self, state=None):
         self.logger.warning(
             'Timeout occured while the pump was running. '
             'Probably the tank is empty!'
@@ -72,7 +79,7 @@ class LowAlarm(AbstractState):
 
 
 class StateMachine(object):
-    def __init__(self):
+    def __init__(self, state_timeout=30):
         self.logger = logging.getLogger(self.__class__.__name__)
         self._states = {
             'IdleState': IdleState,
@@ -80,13 +87,32 @@ class StateMachine(object):
             'LowAlarm': LowAlarm,
             'MaxState': MaxState,
         }
+        self._gl_timeout = None
         self._currentstate = None
+        self._state_timeout = state_timeout
         self.set_new_state('IdleState')
 
     def set_new_state(self, statename):
         oldstate = self._currentstate
+        if oldstate:
+            self.logger.debug(
+                'Switching state from %s to %s',
+                oldstate.__class__.__name__,
+                statename
+            )
+        if self._gl_timeout and self._gl_timeout is not gevent.getcurrent():
+            self._gl_timeout.kill()
+            self.logger.debug('killed a timer')
         self._currentstate = self._states[statename](self)
-        del oldstate
+        self._currentstate.start()
+        self.logger.debug('new timer with timeout %g', self._state_timeout)
+        self._gl_timeout = gevent.spawn_later(
+            self._state_timeout,
+            self.handle_timeout
+        )
+        self.logger.debug('stopping old state %s', oldstate.__class__.__name__)
+        if oldstate:
+            oldstate.stop()
 
     def set_pump_state(self, state):
         self.logger.warning('This is not a real pump controller...')

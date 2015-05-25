@@ -9,6 +9,6 @@ Watering for my plants
 - [x] make pifacecommon.interrupts play with gevent
 - [x] add MaxState when the reservoir is filled (shouldn't allow manual pumping then)
 - [x] stop pump on exit
-- [ ] add timer for timeouts (greenlet?)
+- [x] add timer for timeouts (greenlet?)
 - [ ] add jabber bot to send notification in alarm-state and ask status
 - [ ] remove multiprocess module from interrupts handling

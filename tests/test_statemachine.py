@@ -1,22 +1,24 @@
 
 import pytest
+import gevent
 
 from watering.statemachine import StateMachine
 
 
 @pytest.fixture
 def statemachine():
-    return StateMachine()
+    return StateMachine(state_timeout=0.2)
 
 
 @pytest.fixture
 def pumpstatemachine():
     class PumpStateMachine(StateMachine):
         def __init__(self):
-            super(PumpStateMachine, self).__init__()
+            super(PumpStateMachine, self).__init__(state_timeout=1)
             self.pump_state = False
 
         def set_pump_state(self, state):
+            self.logger.warn('set_pump_state %s', state)
             self.pump_state = state
 
     return PumpStateMachine()
@@ -70,6 +72,13 @@ class TestSimpleStates(object):
         getattr(statemachine, sensor)(sensor_state)
 
         self.check_state(statemachine, initialstate)
+
+    def test_state_timeout(self, statemachine):
+        statemachine.set_new_state('PumpAction')
+
+        gevent.sleep(0.3)
+
+        self.check_state(statemachine, 'LowAlarm')
 
 
 class TestPumpStates(object):
