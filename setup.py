@@ -45,6 +45,7 @@ setup(
     install_requires=[
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
+        'err>=2.2.0',
     ],
     tests_require=[
         'pytest',
