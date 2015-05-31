@@ -30,15 +30,15 @@ class PumpController(StateMachine):
         self.pfd.relays[0].value = state
 
     def in_upper(self, event):
-        self.logger.info('Input event pin0 (upper) %s', event)
+        self.logger.info('Input event pin0 (upper)')
         self.handle_upper_sensor(event.direction != 1)
 
     def in_lower(self, event):
-        self.logger.info('Input event pin1 (lower) %s', event)
+        self.logger.info('Input event pin1 (lower)')
         self.handle_lower_sensor(False)
 
     def in_button(self, event):
-        self.logger.info('Input event pin3 (button) %s', event)
+        self.logger.info('Input event pin3 (button)')
         self.handle_button(True)
 
 
