@@ -17,7 +17,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
+        # imported here, cause outside the eggs aren't loaded
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -35,15 +35,15 @@ setup(
             'pumpcontroller = watering.pumpcontroller:run',
         ]
     },
-    dependency_links=[
-        'git+https://github.com/piface/pifacedigital-emulator.git'
-        '#egg=pifacedigital-emulator',
-    ],
     install_requires=[
-        'gevent==1.0.1',
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
     ],
-    tests_require=['pytest', 'pytest-xdist', 'pytest-cov'],
+    tests_require=[
+        'pytest',
+        'pytest-xdist',
+        'pytest-cov',
+        'pytest_asyncio==0.1.3',
+    ],
     cmdclass={'test': PyTest},
 )

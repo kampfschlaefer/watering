@@ -1,27 +1,27 @@
 
 import pytest
-import gevent
+import asyncio
 
 from watering.statemachine import StateMachine
 
 
 @pytest.fixture
-def statemachine():
-    return StateMachine(state_timeout=0.2)
+def statemachine(event_loop):
+    return StateMachine(event_loop, state_timeout=0.2)
 
 
 @pytest.fixture
-def pumpstatemachine():
+def pumpstatemachine(event_loop):
     class PumpStateMachine(StateMachine):
-        def __init__(self):
-            super(PumpStateMachine, self).__init__(state_timeout=1)
+        def __init__(self, loop):
+            super(PumpStateMachine, self).__init__(loop, state_timeout=1)
             self.pump_state = False
 
         def set_pump_state(self, state):
             self.logger.warn('set_pump_state %s', state)
             self.pump_state = state
 
-    return PumpStateMachine()
+    return PumpStateMachine(event_loop)
 
 
 class TestSimpleStates(object):
@@ -73,10 +73,11 @@ class TestSimpleStates(object):
 
         self.check_state(statemachine, initialstate)
 
-    def test_state_timeout(self, statemachine):
+    @pytest.mark.asyncio
+    def test_state_timeout(self, event_loop, statemachine):
         statemachine.set_new_state('PumpAction')
 
-        gevent.sleep(0.3)
+        yield from asyncio.sleep(1, False)
 
         self.check_state(statemachine, 'LowAlarm')
 

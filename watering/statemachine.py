@@ -1,6 +1,5 @@
 
 import logging
-import gevent
 
 
 class AbstractState(object):
@@ -79,7 +78,7 @@ class LowAlarm(AbstractState):
 
 
 class StateMachine(object):
-    def __init__(self, state_timeout=30):
+    def __init__(self, loop, state_timeout=30):
         self.logger = logging.getLogger(self.__class__.__name__)
         self._states = {
             'IdleState': IdleState,
@@ -87,12 +86,11 @@ class StateMachine(object):
             'LowAlarm': LowAlarm,
             'MaxState': MaxState,
         }
+        self.loop = loop
         self._gl_timeout = None
         self._currentstate = None
         self._state_timeout = state_timeout
         self.set_new_state('IdleState')
-
-        self.logger.debug('current (main) greenlet = %s', gevent.getcurrent())
 
     def set_new_state(self, statename):
         oldstate = self._currentstate
@@ -106,18 +104,13 @@ class StateMachine(object):
             self.logger.debug(
                 'Switching to state %s', statename
             )
-        self.logger.debug(
-            'gl_timeout = %s current = %s',
-            self._gl_timeout,
-            gevent.getcurrent()
-        )
-        if self._gl_timeout and self._gl_timeout is not gevent.getcurrent():
-            self._gl_timeout.kill()
+        if self._gl_timeout:
+            self._gl_timeout.cancel()
             self.logger.debug('killed a timer')
         self._currentstate = self._states[statename](self)
         self._currentstate.start()
         self.logger.debug('new timer with timeout %g', self._state_timeout)
-        self._gl_timeout = gevent.spawn_later(
+        self._gl_timeout = self.loop.call_later(
             self._state_timeout,
             self.handle_timeout
         )
