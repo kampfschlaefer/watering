@@ -100,6 +100,11 @@ class StateMachine(object):
                 oldstate.__class__.__name__,
                 statename
             )
+        else:
+            self.logger.debug(
+                'Switching to state %s', statename
+            )
+        self.logger.debug('gl_timeout = %s current = %s', self._gl_timeout, gevent.getcurrent())
         if self._gl_timeout and self._gl_timeout is not gevent.getcurrent():
             self._gl_timeout.kill()
             self.logger.debug('killed a timer')
