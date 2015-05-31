@@ -92,6 +92,8 @@ class StateMachine(object):
         self._state_timeout = state_timeout
         self.set_new_state('IdleState')
 
+        self.logger.debug('current (main) greenlet = %s', gevent.getcurrent())
+
     def set_new_state(self, statename):
         oldstate = self._currentstate
         if oldstate:
@@ -104,7 +106,11 @@ class StateMachine(object):
             self.logger.debug(
                 'Switching to state %s', statename
             )
-        self.logger.debug('gl_timeout = %s current = %s', self._gl_timeout, gevent.getcurrent())
+        self.logger.debug(
+            'gl_timeout = %s current = %s',
+            self._gl_timeout,
+            gevent.getcurrent()
+        )
         if self._gl_timeout and self._gl_timeout is not gevent.getcurrent():
             self._gl_timeout.kill()
             self.logger.debug('killed a timer')
