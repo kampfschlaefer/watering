@@ -1,5 +1,7 @@
 language: python
 python:
 - 3.4
-install: "python setup.py develop"
+install:
+    - "pip install pytest_asyncio"
+    - "pip install -e ."
 script: "python setup.py test"
