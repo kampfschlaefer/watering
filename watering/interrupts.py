@@ -1,10 +1,7 @@
 
-# copied from github.com/piface/pifacecommon
-# to make it work with gevent
-
-from gevent import threading
+import threading
 import multiprocessing
-from gevent import select
+import select
 import time
 import errno
 import pifacecommon.mcp23s17
