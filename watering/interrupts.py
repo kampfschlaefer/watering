@@ -109,7 +109,7 @@ class PortEventListener(object):
         self.chip = chip
         self.pin_function_maps = list()
         self.event_queue = EventQueue(self.pin_function_maps)
-        self.detector = multiprocessing.Process(
+        self.detector = threading.Thread(
             target=watch_port_events,
             args=(
                 self.port,
