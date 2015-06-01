@@ -1,0 +1,6 @@
+[Core]
+Name = WateringBot
+Module = watering.chatblog
+
+[Python]
+Version = 3.4+
