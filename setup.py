@@ -3,6 +3,12 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
+if sys.version_info <= (3, 4):
+    raise NotImplementedError(
+        'This package uses asyncio from python 3.4. You can\'t install it on '
+        'python below that.'
+    )
+
 
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
@@ -28,6 +34,7 @@ setup(
     version='0.1',
     author='Arnold Krille',
     author_email='arnold@arnoldarts.de',
+    license='GPLv2',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
@@ -46,4 +53,12 @@ setup(
         'pytest_asyncio==0.1.3',
     ],
     cmdclass={'test': PyTest},
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Programming Language :: Python :: 3.4',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Operating System :: POSIX :: Linux',
+        'Topic :: Home Automation',
+    ],
 )
