@@ -11,6 +11,6 @@ Watering for my plants
 - [x] stop pump on exit
 - [x] add timer for timeouts
 - ~~Look at guv as replacement for gevent (gevent is not py3, err seems to need py3)~~
-- [ ] Switch to python3.4 and replace gevent with asyncio
+- [x] Switch to python3.4 and replace gevent with asyncio
 - [ ] add jabber bot to send notification in alarm-state and ask status
-- [ ] remove multiprocess module from interrupts handling
+- [ ] remove threading and multiprocess module from interrupts handling and replace with asyncio

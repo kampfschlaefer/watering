@@ -4,8 +4,8 @@ from pifacedigitalio import (
     PiFaceDigital,
     IODIR_RISING_EDGE,
     IODIR_BOTH,
+    InputEventListener
 )
-from .interrupts import InputEventListener
 
 from .statemachine import StateMachine
 
