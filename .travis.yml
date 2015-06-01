@@ -1,9 +1,12 @@
 language: python
 python:
-- 2.7
-# - 3.4
-# matrix:
-#   allow_failures:
-#   - python: 3.4
-install: "python setup.py develop"
+    - 3.3
+    - 3.4
+matrix:
+    allow_failures:
+        - python: 3.3
+install:
+    - "pip install -U pip"
+    - "pip install pytest_asyncio"
+    - "pip install -e ."
 script: "python setup.py test"

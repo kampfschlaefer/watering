@@ -1,18 +1,18 @@
 
-import gevent
+import asyncio
 from pifacedigitalio import (
     PiFaceDigital,
     IODIR_RISING_EDGE,
     IODIR_BOTH,
+    InputEventListener
 )
-from interrupts import InputEventListener
 
-from statemachine import StateMachine
+from .statemachine import StateMachine
 
 
 class PumpController(StateMachine):
-    def __init__(self):
-        super(PumpController, self).__init__()
+    def __init__(self, loop):
+        super(PumpController, self).__init__(loop)
 
         self.pfd = PiFaceDigital()
 
@@ -48,14 +48,13 @@ def run():
     logging.basicConfig(level=logging.DEBUG)
     logging.info('starting main thread')
 
-    pc = PumpController()
+    loop = asyncio.get_event_loop()
 
-    try:
-        while True:
-            gevent.sleep(10)
-    except KeyboardInterrupt:
-        pass
+    pc = PumpController(loop)
+
+    loop.run_forever()
 
     logging.info('ending...')
     pc.stop()
+    loop.close()
     logging.info('...finished')

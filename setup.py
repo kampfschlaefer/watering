@@ -3,6 +3,12 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
+if sys.version_info <= (3, 4):
+    raise NotImplementedError(
+        'This package uses asyncio from python 3.4. You can\'t install it on '
+        'python below that.'
+    )
+
 
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
@@ -17,7 +23,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
+        # imported here, cause outside the eggs aren't loaded
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -28,6 +34,7 @@ setup(
     version='0.1',
     author='Arnold Krille',
     author_email='arnold@arnoldarts.de',
+    license='GPLv2',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
@@ -35,15 +42,23 @@ setup(
             'pumpcontroller = watering.pumpcontroller:run',
         ]
     },
-    dependency_links=[
-        'git+https://github.com/piface/pifacedigital-emulator.git'
-        '#egg=pifacedigital-emulator',
-    ],
     install_requires=[
-        'gevent==1.0.1',
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
     ],
-    tests_require=['pytest', 'pytest-xdist', 'pytest-cov'],
+    tests_require=[
+        'pytest',
+        'pytest-xdist',
+        'pytest-cov',
+        'pytest_asyncio==0.1.3',
+    ],
     cmdclass={'test': PyTest},
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Programming Language :: Python :: 3.4',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Operating System :: POSIX :: Linux',
+        'Topic :: Home Automation',
+    ],
 )
