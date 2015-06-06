@@ -110,7 +110,7 @@ class StateMachine(object):
         self._currentstate = self._states[statename](self)
         self._currentstate.start()
         self.logger.debug('new timer with timeout %g', self._state_timeout)
-        self._gl_timeout = self.loop.call_later(
+        self._timeout_handle = self.loop.call_later(
             self._state_timeout,
             self.handle_timeout
         )
