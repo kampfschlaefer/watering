@@ -31,7 +31,10 @@ class PumpController(StateMachine):
 
     def in_upper(self, event):
         self.logger.info('Input event pin0 (upper)')
-        self.loop.call_soon_threadsafe(self.handle_upper_sensor, event.direction != 1)
+        self.loop.call_soon_threadsafe(
+            self.handle_upper_sensor,
+            event.direction != 1
+        )
 
     def in_lower(self, event):
         self.logger.info('Input event pin1 (lower)')
