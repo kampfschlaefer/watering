@@ -42,6 +42,9 @@ setup(
             'pumpcontroller = watering.pumpcontroller:run',
         ]
     },
+    dependency_links=[
+        'https://github.com/pytest-dev/pytest-asyncio/archive/v0.1.3.tar.gz#egg=pytest_asyncio'
+    ],
     install_requires=[
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
