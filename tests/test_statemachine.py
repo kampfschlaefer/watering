@@ -77,7 +77,27 @@ class TestSimpleStates(object):
     def test_state_timeout(self, event_loop, statemachine):
         statemachine.set_new_state('PumpAction')
 
-        yield from asyncio.sleep(0.5, False)
+        yield from asyncio.sleep(0.5)
+
+        self.check_state(statemachine, 'LowAlarm')
+
+    @pytest.mark.asyncio
+    def test_several_timeouts(self, event_loop, statemachine):
+        statemachine.handle_button(True)
+
+        yield from asyncio.sleep(0.1)
+
+        self.check_state(statemachine, 'PumpAction')
+
+        yield from asyncio.sleep(0.4)
+
+        self.check_state(statemachine, 'LowAlarm')
+
+        statemachine.handle_button(True)
+
+        self.check_state(statemachine, 'PumpAction')
+
+        yield from asyncio.sleep(0.5)
 
         self.check_state(statemachine, 'LowAlarm')
 

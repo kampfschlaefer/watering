@@ -87,7 +87,7 @@ class StateMachine(object):
             'MaxState': MaxState,
         }
         self.loop = loop
-        self._gl_timeout = None
+        self._timeout_handle = None
         self._currentstate = None
         self._state_timeout = state_timeout
         self.set_new_state('IdleState')
@@ -104,13 +104,13 @@ class StateMachine(object):
             self.logger.debug(
                 'Switching to state %s', statename
             )
-        if self._gl_timeout:
-            self._gl_timeout.cancel()
+        if self._timeout_handle:
+            self._timeout_handle.cancel()
             self.logger.debug('killed a timer')
         self._currentstate = self._states[statename](self)
         self._currentstate.start()
         self.logger.debug('new timer with timeout %g', self._state_timeout)
-        self._gl_timeout = self.loop.call_later(
+        self._timeout_handle = self.loop.call_later(
             self._state_timeout,
             self.handle_timeout
         )
