@@ -1,6 +1,6 @@
 [Core]
 Name = WateringBot
-Module = watering.chatblog
+Module = chatbot
 
 [Python]
-Version = 3.4+
+Version = 3
