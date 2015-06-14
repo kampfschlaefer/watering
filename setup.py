@@ -43,7 +43,8 @@ setup(
         ]
     },
     dependency_links=[
-        'https://github.com/pytest-dev/pytest-asyncio/archive/v0.1.3.tar.gz#egg=pytest_asyncio'
+        'https://github.com/pytest-dev/pytest-asyncio/archive/v0.1.3.tar.gz'
+        '#egg=pytest_asyncio'
     ],
     install_requires=[
         'pifacecommon==4.1.2',
@@ -55,6 +56,7 @@ setup(
         'pytest-xdist',
         'pytest-cov',
         'pytest_asyncio==0.1.3',
+        'pytest-flake8',
     ],
     cmdclass={'test': PyTest},
     classifiers=[
