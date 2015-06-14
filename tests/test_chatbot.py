@@ -12,8 +12,16 @@ class TestChatbot(object):
 
     def test_help(self):
         push_message('!help WaterBot')
-        assert 'Say hello' in pop_message()
+        answer = pop_message()
+        assert 'Say hello' in answer
 
     def test_hello(self):
         push_message('!hello')
-        assert 'Hello' in pop_message()
+        answer = pop_message()
+        assert 'Hello' in answer
+
+    @pytest.mark.xfail
+    def test_get_status(self):
+        push_message('!pumpstatus')
+        answer = pop_message()
+        assert 'Idle' in answer

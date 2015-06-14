@@ -50,6 +50,7 @@ setup(
         'pifacecommon==4.1.2',
         'pifacedigitalio==3.0.5',
         'err>=2.2.0',
+        'sleekxmpp==1.3.1',
     ],
     tests_require=[
         'pytest',
@@ -57,6 +58,7 @@ setup(
         'pytest-cov',
         'pytest_asyncio==0.1.3',
         'pytest-flake8',
+        'pytest-capturelog',
     ],
     cmdclass={'test': PyTest},
     classifiers=[
